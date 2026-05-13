@@ -7,15 +7,27 @@
 from pyspark.sql import functions as F
 from pyspark.sql import Window
 
-SILVER_CATALOG = "silver"
+_rows = spark.sql("SHOW CATALOGS").collect()
+_catalog_list = [r[0] for r in _rows if len(r) > 0]
+
+_priority = ("main", "hive_metastore", "workspace")
+UC_CATALOG = next((c for c in _priority if c in _catalog_list), None)
+if UC_CATALOG is None:
+    _read_only = {"samples", "system"}
+    _candidates = [c for c in _catalog_list if c not in _read_only]
+    UC_CATALOG = _candidates[0] if _candidates else (_catalog_list[0] if _catalog_list else None)
+if UC_CATALOG is None:
+    raise RuntimeError("SHOW CATALOGS não retornou catálogos.")
+
 SILVER_SCHEMA = "silver"
-GOLD_CATALOG = "gold"
 GOLD_SCHEMA = "gold"
 
-clientes = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`clientes`")
-produtos = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`produtos`")
-pedidos = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`pedidos`")
-itens = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`pedido_itens`")
+print(f"Catálogo usado: {UC_CATALOG}")
+
+clientes = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`clientes`")
+produtos = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`produtos`")
+pedidos = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`pedidos`")
+itens = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`pedido_itens`")
 
 
 def sk_from_id(df, id_col, sk_name):
@@ -80,16 +92,16 @@ fato_item_pedido = (
 )
 
 dim_cliente.write.format("delta").mode("overwrite").saveAsTable(
-    f"`{GOLD_CATALOG}`.`{GOLD_SCHEMA}`.`dim_cliente`"
+    f"`{UC_CATALOG}`.`{GOLD_SCHEMA}`.`dim_cliente`"
 )
 dim_produto.write.format("delta").mode("overwrite").saveAsTable(
-    f"`{GOLD_CATALOG}`.`{GOLD_SCHEMA}`.`dim_produto`"
+    f"`{UC_CATALOG}`.`{GOLD_SCHEMA}`.`dim_produto`"
 )
 dim_pedido.write.format("delta").mode("overwrite").saveAsTable(
-    f"`{GOLD_CATALOG}`.`{GOLD_SCHEMA}`.`dim_pedido`"
+    f"`{UC_CATALOG}`.`{GOLD_SCHEMA}`.`dim_pedido`"
 )
 fato_item_pedido.write.format("delta").mode("overwrite").saveAsTable(
-    f"`{GOLD_CATALOG}`.`{GOLD_SCHEMA}`.`fato_item_pedido`"
+    f"`{UC_CATALOG}`.`{GOLD_SCHEMA}`.`fato_item_pedido`"
 )
 
 # COMMAND ----------

@@ -7,19 +7,31 @@
 from pyspark.sql import functions as F
 from pyspark.sql import Window
 
-BRONZE_CATALOG = "bronze"
+_rows = spark.sql("SHOW CATALOGS").collect()
+_catalog_list = [r[0] for r in _rows if len(r) > 0]
+
+_priority = ("main", "hive_metastore", "workspace")
+UC_CATALOG = next((c for c in _priority if c in _catalog_list), None)
+if UC_CATALOG is None:
+    _read_only = {"samples", "system"}
+    _candidates = [c for c in _catalog_list if c not in _read_only]
+    UC_CATALOG = _candidates[0] if _candidates else (_catalog_list[0] if _catalog_list else None)
+if UC_CATALOG is None:
+    raise RuntimeError("SHOW CATALOGS não retornou catálogos.")
+
 BRONZE_SCHEMA = "bronze"
-SILVER_CATALOG = "silver"
 SILVER_SCHEMA = "silver"
+
+print(f"Catálogo usado: {UC_CATALOG}")
 
 
 def read_bronze(name: str):
-    return spark.table(f"`{BRONZE_CATALOG}`.`{BRONZE_SCHEMA}`.`{name}`")
+    return spark.table(f"`{UC_CATALOG}`.`{BRONZE_SCHEMA}`.`{name}`")
 
 
 def write_silver(df, name: str):
     df.write.format("delta").mode("overwrite").saveAsTable(
-        f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`{name}`"
+        f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`{name}`"
     )
 
 
@@ -64,7 +76,7 @@ pe1 = (
     .where(F.col("status").isin(list(allowed)))
 )
 
-cli = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`clientes`").select("cliente_id")
+cli = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`clientes`").select("cliente_id")
 pe2 = pe1.join(cli, on="cliente_id", how="inner")
 write_silver(pe2, "pedidos")
 
@@ -77,8 +89,8 @@ pi1 = (
     .where(F.col("preco_unitario") >= F.lit(0))
 )
 
-ped = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`pedidos`").select("pedido_id")
-pr = spark.table(f"`{SILVER_CATALOG}`.`{SILVER_SCHEMA}`.`produtos`").select("produto_id")
+ped = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`pedidos`").select("pedido_id")
+pr = spark.table(f"`{UC_CATALOG}`.`{SILVER_SCHEMA}`.`produtos`").select("produto_id")
 
 pi2 = pi1.join(ped, on="pedido_id", how="inner").join(pr, on="produto_id", how="inner")
 write_silver(pi2, "pedido_itens")
