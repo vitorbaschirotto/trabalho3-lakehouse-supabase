@@ -17,6 +17,15 @@ Projeto acadêmico: extração do **Supabase (PostgreSQL)** para camadas **LANDI
 | `notebooks/` | Código dos notebooks (PySpark), um arquivo por etapa |
 | `docs/` | Documentação servida pelo **MkDocs** |
 
+## Documentação (MkDocs no GitHub Pages)
+
+- **Site publicado:** [https://vitorbaschirotto.github.io/trabalho3-lakehouse-supabase/](https://vitorbaschirotto.github.io/trabalho3-lakehouse-supabase/)
+- **Código-fonte da doc:** pasta `docs/` e `mkdocs.yml` (branch `main`); build deployado na branch `gh-pages` com `mkdocs gh-deploy`.
+
+Se o link abrir **404**, no repositório GitHub vá em **Settings → Pages** e configure **Build and deployment** com fonte **Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. Aguarde alguns minutos e atualize a página.
+
+Opcional: na página principal do repositório, em **About** (ícone de engrenagem), adicione o mesmo URL em **Website**.
+
 ## Início rápido
 
 1. Execute os scripts em `sql/` no SQL Editor do Supabase.
@@ -25,7 +34,7 @@ Projeto acadêmico: extração do **Supabase (PostgreSQL)** para camadas **LANDI
 4. Importe ou cole cada arquivo `.py` em um notebook no Workspace.
 5. Crie um **Job** encadeando: `01_landing` → `02_bronze` → `03_silver` → `04_gold`.
 
-Detalhes em [Documentação MkDocs](docs/index.md) ou, após instalar dependências, rode:
+Detalhes no [site MkDocs](https://vitorbaschirotto.github.io/trabalho3-lakehouse-supabase/) ou no [fonte em Markdown](docs/index.md). Localmente, após instalar dependências:
 
 ```bash
 pip install mkdocs-material
