@@ -1,0 +1,28 @@
+site_name: Trabalho 3 — Lakehouse Databricks (Medalhão)
+site_description: Pipeline LANDING → BRONZE → SILVER → GOLD com Supabase (PostgreSQL).
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Modo claro
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Modo escuro
+nav:
+  - Início: index.md
+  - Arquitetura: arquitetura.md
+  - Supabase: supabase.md
+  - Databricks: databricks.md
+  - Job (orquestração): job.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - tables
