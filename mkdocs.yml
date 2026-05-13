@@ -1,4 +1,5 @@
 site_name: Trabalho 3 — Lakehouse Databricks (Medalhão)
+site_url: https://vitorbaschirotto.github.io/trabalho3-lakehouse-supabase/
 site_description: Pipeline LANDING → BRONZE → SILVER → GOLD com Supabase (PostgreSQL).
 theme:
   name: material

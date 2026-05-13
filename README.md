@@ -20,9 +20,9 @@ Projeto acadêmico: extração do **Supabase (PostgreSQL)** para camadas **LANDI
 ## Documentação (MkDocs no GitHub Pages)
 
 - **Site publicado:** [https://vitorbaschirotto.github.io/trabalho3-lakehouse-supabase/](https://vitorbaschirotto.github.io/trabalho3-lakehouse-supabase/)
-- **Código-fonte da doc:** pasta `docs/` e `mkdocs.yml` (branch `main`); build deployado na branch `gh-pages` com `mkdocs gh-deploy`.
+- **Código-fonte da doc:** pasta `docs/` e `mkdocs.yml` (branch `main`); build na branch `gh-pages` via `mkdocs gh-deploy` ou pelo workflow **Actions** `Deploy MkDocs to GitHub Pages`.
 
-Se o link abrir **404**, no repositório GitHub vá em **Settings → Pages** e configure **Build and deployment** com fonte **Deploy from a branch**, branch **`gh-pages`**, pasta **`/` (root)**. Aguarde alguns minutos e atualize a página.
+Se o link abrir **404** (*There isn't a GitHub Pages site here*), a origem de publicação **não está ligada**. Em **Settings → Pages** escolha **Deploy from a branch** (não deixe em “None”), branch **`gh-pages`**, pasta **`/` (root)**, clique **Save** e espere alguns minutos. Só tornar o repositório público **não** activa o Pages sozinho.
 
 Opcional: na página principal do repositório, em **About** (ícone de engrenagem), adicione o mesmo URL em **Website**.
 
